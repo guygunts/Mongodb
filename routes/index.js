@@ -1,6 +1,7 @@
 const express = require('express');
 const  MongoClient = require('mongodb').MongoClient;
 const pathdev = require('dotenv').config({ path: './config/dev.env' });
+const http = require('http').createServer(express);
 const router = express.Router();
 const io = require('socket.io')(http);
 const usermanagement = require('../src/controller/usermanagementController');
