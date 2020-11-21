@@ -1,7 +1,8 @@
-var express = require('express');
+const express = require('express');
 const  MongoClient = require('mongodb').MongoClient;
 const pathdev = require('dotenv').config({ path: './config/dev.env' });
 const router = express.Router();
+const io = require('socket.io')(http);
 const usermanagement = require('../src/controller/usermanagementController');
 const food = require('../src/controller/foodmanagementController');
 const room = require('../src/controller/roommanagementController');
@@ -30,9 +31,16 @@ router.post('/listreceipt',receipt.listreceipt)
 router.post('/addreceipt',receipt.addreceipt)
 router.post('/updatereceipt',receipt.updatereceipt)
 router.post('/deletereceipt',receipt.deletereceipt)
-
+router.get('/chat', (req, res) => {
+    res.sendFile(__dirname + '/index.html');
+  });
 router.get('/createdb',createdb)
-
+io.on('connection', (socket) => {
+    socket.broadcast.emit('hi');
+    socket.on('chat message', (msg) => {
+        io.emit('chat message', msg);
+    });
+  });
 async function createdb(){
     let datajson = await MongoClient.connect(`mongodb://${pathdev.parsed.host}/${pathdev.parsed.database}${pathdev.parsed.option}`)
     let dbo = datajson.db(`${pathdev.parsed.database}`);
